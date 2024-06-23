@@ -1,0 +1,21 @@
+spark:
+  scan:
+    master: spark://processing:7077
+    driver:
+      memory: 12g
+      cores: 1
+    executor:
+      memory: 4g
+      instances: 4
+      cores: 1
+    app: Scan
+  repartition:
+    master: spark://processing:7077
+    driver:
+      memory: 16g
+      cores: 1
+    executor:
+      memory: 32g
+      instances: 1
+      cores: 1
+    app: RepartitionFile

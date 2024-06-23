@@ -1,0 +1,39 @@
+name: Test Script PR
+
+on:
+  pull_request:
+    types: [edited, opened, synchronize, reopened]
+    branches: [main]
+
+jobs:
+  image_build_and_test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+          cache: 'pip' # caching pip dependencies
+
+      - name: Cache pip dependencies
+        id: cached-pip-dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ runner.os }}-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            pip-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install -r requirements.txt
+
+      - name: Test PR
+        run: |
+          source venv/bin/activate
+          pytest
