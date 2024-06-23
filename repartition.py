@@ -1,18 +1,21 @@
 from pyspark.sql import SparkSession
 from pyspark import StorageLevel
+from config import parse_spark_config
 
 import math
 
+cfg = parse_spark_config()
+repartition_config = cfg['repartition']
+
 # Initialize Spark session
-spark = SparkSession.builder \
-    .master('spark://processing:7077') \
-    .config("spark.driver.memory", "16g") \
-    .config("spark.driver.cores", "1") \
-    .config("spark.executor.memory", "32g") \
-    .config("spark.executor.instances", "1") \
-    .config("spark.executor.cores", "1") \
-    .appName('RepartitionFile') \
-    .getOrCreate()
+spark_session = SparkSession.builder \
+    .master(cfg["master"]) \
+    .appName(cfg["app"]) \
+
+for keys in repartition_config["config"].keys():
+    spark_session.config(keys, repartition_config["config"][keys])
+
+spark = spark_session.getOrCreate()
 
 # File Size for repartition targets and Input/Output file paths
 file_size_gb = 11 # This is the approximate size of the input parquet files, should probably be loaded from disk

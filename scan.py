@@ -3,18 +3,21 @@ from pyspark.sql.functions import col, udf, size
 from pyspark.sql.types import StringType, ArrayType
 from pyspark import StorageLevel
 from utils import regex_patterns
+from config import parse_spark_config
 
 import re
 
-spark = SparkSession.builder \
-    .master('spark://processing:7077') \
-    .config("spark.driver.memory", "12g") \
-    .config("spark.driver.cores", "1") \
-    .config("spark.executor.memory", "4g") \
-    .config("spark.executor.instances", "4") \
-    .config("spark.executor.cores", "1") \
-    .appName('Scan') \
-    .getOrCreate()
+cfg = parse_spark_config()
+scan_config = cfg['scan']
+
+spark_session = SparkSession.builder \
+    .master(scan_config["master"]) \
+    .appName(scan_config["app"]) \
+
+for keys in scan_config["config"].keys():
+    spark_session.config(keys, scan_config["config"][keys])
+
+spark = spark_session.getOrCreate()
 
 # Compile the combined regex patterns, this significantly speeds up the process and (?i) makes it case insensitive
 compiled_patterns = {category: re.compile("(?i)" + "|".join(patterns)) for category, patterns in regex_patterns.items()}

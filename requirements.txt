@@ -9,3 +9,5 @@ pandas
 fastparquet    # used by the download wikipedia script to save the dataset
 parquet-tools  # this is used for CLI reading/inspection of parquet files
 
+# Config Reading
+pyyaml
