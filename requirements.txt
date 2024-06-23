@@ -11,3 +11,4 @@ parquet-tools  # this is used for CLI reading/inspection of parquet files
 
 # Config Reading
 pyyaml
+pytest
